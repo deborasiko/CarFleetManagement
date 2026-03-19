@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:15
+    container_name: carfleet_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: carfleet
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./CarFleetManagement
+      dockerfile: src/CarFleet.Api/Dockerfile
+    container_name: carfleet_api
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:5000
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=carfleet;Username=postgres;Password=postgres
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context: ./carfleet-frontend   # change to your frontend folder name
+    container_name: carfleet_frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  postgres_data:

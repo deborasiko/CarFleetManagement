@@ -1,0 +1,245 @@
+{
+  "roles": [
+    {
+      "name": "Administrator",
+      "roleType": "Admin",
+      "description": "Full system access"
+    },
+    {
+      "name": "Fleet Manager",
+      "roleType": "FleetManager",
+      "description": "Manages fleet operations and vehicles"
+    },
+    {
+      "name": "Driver",
+      "roleType": "Driver",
+      "description": "Driver access"
+    }
+  ],
+  "fleetLocations": [
+    {
+      "name": "Downtown Depot",
+      "address": "123 Main Street",
+      "city": "New York",
+      "state": "NY",
+      "postalCode": "10001",
+      "country": "USA",
+      "latitude": 40.7128,
+      "longitude": -74.0060,
+      "isActive": true
+    },
+    {
+      "name": "Brooklyn Hub",
+      "address": "456 Atlantic Avenue",
+      "city": "Brooklyn",
+      "state": "NY",
+      "postalCode": "11217",
+      "country": "USA",
+      "latitude": 40.6782,
+      "longitude": -73.9442,
+      "isActive": true
+    }
+  ],
+  "vehicles": [
+    {
+      "make": "Ford",
+      "model": "Transit",
+      "vin": "1FTYE14H3CFA01234",
+      "year": 2023,
+      "licensePlate": "NYC2023A",
+      "color": "White",
+      "fuelType": "Diesel",
+      "status": "Active",
+      "fleetLocationIndex": 0,
+      "yearsAgo": 2
+    },
+    {
+      "make": "Mercedes-Benz",
+      "model": "Sprinter",
+      "vin": "WDB9050311R245678",
+      "year": 2022,
+      "licensePlate": "NYC2022B",
+      "color": "Silver",
+      "fuelType": "Diesel",
+      "status": "Active",
+      "fleetLocationIndex": 0,
+      "yearsAgo": 3
+    },
+    {
+      "make": "Tesla",
+      "model": "Model 3",
+      "vin": "5YJ3E1EA9KF123456",
+      "year": 2024,
+      "licensePlate": "NYC2024C",
+      "color": "Black",
+      "fuelType": "Electric",
+      "status": "Active",
+      "fleetLocationIndex": 1,
+      "monthsAgo": 6
+    }
+  ],
+  "drivers": [
+    {
+      "firstName": "John",
+      "lastName": "Smith",
+      "licenseNumber": "D1234567",
+      "licenseExpiryYears": 5,
+      "phone": "555-0101",
+      "email": "john.smith@example.com",
+      "hireYearsAgo": 4,
+      "status": "Active"
+    },
+    {
+      "firstName": "Sarah",
+      "lastName": "Johnson",
+      "licenseNumber": "D7654321",
+      "licenseExpiryYears": 3,
+      "phone": "555-0102",
+      "email": "sarah.johnson@example.com",
+      "hireYearsAgo": 2,
+      "status": "Active"
+    },
+    {
+      "firstName": "Michael",
+      "lastName": "Davis",
+      "licenseNumber": "D1122334",
+      "licenseExpiryYears": 4,
+      "phone": "555-0103",
+      "email": "michael.davis@example.com",
+      "hireMonthsAgo": 8,
+      "status": "Active"
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@example.com",
+      "fullName": "Admin User",
+      "passwordHash": "$2a$11$abc123...",
+      "roleIndex": 0,
+      "isActive": true,
+      "driverIndex": null
+    },
+    {
+      "username": "fleet_manager",
+      "email": "manager@example.com",
+      "fullName": "Fleet Manager",
+      "passwordHash": "$2a$11$def456...",
+      "roleIndex": 1,
+      "isActive": true,
+      "driverIndex": null
+    },
+    {
+      "username": "john_driver",
+      "email": "john.smith@example.com",
+      "fullName": "John Smith",
+      "passwordHash": "$2a$11$ghi789...",
+      "roleIndex": 2,
+      "isActive": true,
+      "driverIndex": 0
+    },
+    {
+      "username": "sarah_driver",
+      "email": "sarah.johnson@example.com",
+      "fullName": "Sarah Johnson",
+      "passwordHash": "$2a$11$jkl012...",
+      "roleIndex": 2,
+      "isActive": true,
+      "driverIndex": 1
+    }
+  ],
+  "vehicleAssignments": [
+    {
+      "vehicleIndex": 0,
+      "driverIndex": 0,
+      "startMonthsAgo": 6,
+      "endDate": null,
+      "assignedBy": "Admin",
+      "notes": "Standard assignment"
+    },
+    {
+      "vehicleIndex": 1,
+      "driverIndex": 1,
+      "startMonthsAgo": 4,
+      "endDate": null,
+      "assignedBy": "Admin",
+      "notes": "Standard assignment"
+    },
+    {
+      "vehicleIndex": 2,
+      "driverIndex": 2,
+      "startMonthsAgo": 2,
+      "endDate": null,
+      "assignedBy": "Admin",
+      "notes": "Standard assignment"
+    }
+  ],
+  "fuelLogs": [
+    {
+      "vehicleIndex": 0,
+      "driverIndex": 0,
+      "liters": 50.5,
+      "pricePerLiter": 4.00,
+      "totalCost": 202.00,
+      "odometer": 45000,
+      "daysAgo": 10,
+      "fuelStation": "Manhattan Fuel Station"
+    },
+    {
+      "vehicleIndex": 1,
+      "driverIndex": 1,
+      "liters": 48.0,
+      "pricePerLiter": 4.00,
+      "totalCost": 192.00,
+      "odometer": 52000,
+      "daysAgo": 5,
+      "fuelStation": "Brooklyn Fuel Station"
+    }
+  ],
+  "trips": [
+    {
+      "vehicleIndex": 0,
+      "driverIndex": 0,
+      "startLocation": "Downtown Depot",
+      "endLocation": "Midtown Office",
+      "distanceKm": 15.0,
+      "startDaysAgo": 3,
+      "startHour": 8,
+      "endHour": 10,
+      "purpose": "Client delivery"
+    },
+    {
+      "vehicleIndex": 1,
+      "driverIndex": 1,
+      "startLocation": "Brooklyn Hub",
+      "endLocation": "Queens Distribution Center",
+      "distanceKm": 20.0,
+      "startDaysAgo": 2,
+      "startHour": 9,
+      "endHour": 12,
+      "purpose": "Supply transport"
+    }
+  ],
+  "serviceRecords": [
+    {
+      "vehicleIndex": 0,
+      "serviceDaysAgo": 20,
+      "serviceType": "Oil",
+      "description": "Regular maintenance - oil and filter change",
+      "cost": 150.00,
+      "odometer": 44800,
+      "nextServiceMonthsAhead": 6,
+      "serviceProvider": "ABC Auto Service"
+    },
+    {
+      "vehicleIndex": 2,
+      "serviceDaysAgo": 15,
+      "serviceType": "Inspection",
+      "description": "EV battery system diagnostics",
+      "cost": 100.00,
+      "odometer": 5000,
+      "nextServiceMonthsAhead": 12,
+      "serviceProvider": "Tesla Service Center"
+    }
+  ]
+}
