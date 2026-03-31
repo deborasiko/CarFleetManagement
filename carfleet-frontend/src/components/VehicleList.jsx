@@ -26,17 +26,17 @@ function VehicleList({ vehicles, onEdit, onDelete }) {
         <tbody>
           {vehicles.map((vehicle) => (
             <tr key={vehicle.id}>
-              <td>{vehicle.make}</td>
-              <td>{vehicle.model}</td>
-              <td>{vehicle.licensePlate}</td>
-              <td>{vehicle.year}</td>
-              <td>{vehicle.mileage} km</td>
-              <td>{vehicle.status}</td>
-              <td>
+              <td data-label="Make">{vehicle.make}</td>
+              <td data-label="Model">{vehicle.model}</td>
+              <td data-label="License Plate">{vehicle.licensePlate}</td>
+              <td data-label="Year">{vehicle.year}</td>
+              <td data-label="Mileage">{vehicle.mileage} km</td>
+              <td data-label="Status">{vehicle.status}</td>
+              <td data-label="Actions">
                 <button
                   className="btn btn-secondary"
                   onClick={() => onEdit(vehicle)}
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
                 >
                   Edit
                 </button>

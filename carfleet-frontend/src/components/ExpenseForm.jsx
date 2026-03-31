@@ -1,19 +1,26 @@
 import { useState, useEffect } from 'react'
+import VehicleSelector from './VehicleSelector'
+import { getTodayDateString } from '../utils/dateUtils'
 
 function ExpenseForm({ expense, onSave, onCancel }) {
   const [formData, setFormData] = useState({
     vehicleId: 0,
-    category: 'Maintenance',
+    expenseType: 0,
     amount: 0,
-    date: '',
+    expenseDate: getTodayDateString(),
+    vendor: '',
     description: '',
   })
 
   useEffect(() => {
     if (expense) {
       setFormData({
-        ...expense,
-        date: expense.date?.split('T')[0] || '',
+        vehicleId: expense.vehicleId || 0,
+        expenseType: expense.expenseType || expense.category || 0,
+        amount: expense.amount || 0,
+        expenseDate: expense.expenseDate?.split('T')[0] || expense.date?.split('T')[0] || '',
+        vendor: expense.vendor || '',
+        description: expense.description || '',
       })
     }
   }, [expense])
@@ -22,15 +29,32 @@ function ExpenseForm({ expense, onSave, onCancel }) {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'vehicleId' || name === 'amount'
-        ? parseInt(value) || (name === 'amount' ? 0 : 0)
+      [name]: name === 'vehicleId' || name === 'expenseType'
+        ? parseInt(value) || 0
+        : name === 'amount'
+        ? parseFloat(value) || 0
         : value
     }))
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSave(formData)
+    
+    // Convert date to ISO 8601 datetime format
+    const expenseDateTime = formData.expenseDate ? `${formData.expenseDate}T00:00:00Z` : new Date().toISOString()
+    
+    // Prepare data for submission - match ExpenseCreateDto
+    const submitData = {
+      vehicleId: parseInt(formData.vehicleId),
+      expenseType: parseInt(formData.expenseType),
+      amount: parseFloat(formData.amount),
+      expenseDate: expenseDateTime, // ISO 8601 format with time
+      vendor: formData.vendor || '',
+      description: formData.description || '',
+    }
+    
+    console.log('Submitting expense data:', submitData)
+    onSave(submitData)
   }
 
   return (
@@ -39,23 +63,25 @@ function ExpenseForm({ expense, onSave, onCancel }) {
       <form onSubmit={handleSubmit}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
           <div className="form-group">
-            <label>Vehicle ID *</label>
-            <input
-              type="number"
-              name="vehicleId"
+            <label>Vehicle *</label>
+            <VehicleSelector
               value={formData.vehicleId}
-              onChange={handleChange}
+              onChange={(vehicleId) => setFormData(prev => ({ ...prev, vehicleId }))}
               required
             />
           </div>
           <div className="form-group">
-            <label>Category *</label>
-            <select name="category" value={formData.category} onChange={handleChange} required>
-              <option value="Maintenance">Maintenance</option>
-              <option value="Fuel">Fuel</option>
-              <option value="Insurance">Insurance</option>
-              <option value="Registration">Registration</option>
-              <option value="Other">Other</option>
+            <label>Expense Type *</label>
+            <select name="expenseType" value={formData.expenseType} onChange={handleChange} required>
+              <option value="">Select type...</option>
+              <option value="0">Insurance</option>
+              <option value="1">Maintenance</option>
+              <option value="2">Tolls</option>
+              <option value="3">Parking</option>
+              <option value="4">Repairs</option>
+              <option value="5">Cleaning</option>
+              <option value="6">Registration</option>
+              <option value="7">Other</option>
             </select>
           </div>
           <div className="form-group">
@@ -71,13 +97,23 @@ function ExpenseForm({ expense, onSave, onCancel }) {
             />
           </div>
           <div className="form-group">
-            <label>Date *</label>
+            <label>Expense Date *</label>
             <input
               type="date"
-              name="date"
-              value={formData.date}
+              name="expenseDate"
+              value={formData.expenseDate}
               onChange={handleChange}
               required
+            />
+          </div>
+          <div className="form-group">
+            <label>Vendor</label>
+            <input
+              type="text"
+              name="vendor"
+              value={formData.vendor}
+              onChange={handleChange}
+              placeholder="e.g., State Insurance Co"
             />
           </div>
           <div className="form-group" style={{ gridColumn: '1 / -1' }}>
@@ -86,6 +122,7 @@ function ExpenseForm({ expense, onSave, onCancel }) {
               name="description"
               value={formData.description}
               onChange={handleChange}
+              placeholder="Additional notes"
             />
           </div>
         </div>

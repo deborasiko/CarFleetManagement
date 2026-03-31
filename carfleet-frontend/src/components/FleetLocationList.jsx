@@ -25,16 +25,16 @@ function FleetLocationList({ locations, onEdit, onDelete }) {
         <tbody>
           {locations.map((location) => (
             <tr key={location.id}>
-              <td>{location.name}</td>
-              <td>{location.address}</td>
-              <td>{location.city}</td>
-              <td>{location.country}</td>
-              <td>{location.capacity} vehicles</td>
-              <td>
+              <td data-label="Name">{location.name}</td>
+              <td data-label="Address">{location.address}</td>
+              <td data-label="City">{location.city}</td>
+              <td data-label="Country">{location.country}</td>
+              <td data-label="Capacity">{location.capacity} vehicles</td>
+              <td data-label="Actions">
                 <button
                   className="btn btn-secondary"
                   onClick={() => onEdit(location)}
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
                 >
                   Edit
                 </button>

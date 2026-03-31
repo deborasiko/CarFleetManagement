@@ -1,4 +1,41 @@
+import { useState, useEffect } from 'react'
+import { vehicleService, driverService } from '../services/apiService'
+import { formatDate } from '../utils/dateUtils'
+
 function VehicleAssignmentList({ assignments, onEdit, onDelete }) {
+  const [vehicles, setVehicles] = useState({})
+  const [drivers, setDrivers] = useState({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [vehiclesRes, driversRes] = await Promise.all([
+          vehicleService.getAll(),
+          driverService.getAll()
+        ])
+        
+        const vehiclesMap = {}
+        vehiclesRes.data?.forEach(v => {
+          vehiclesMap[v.id] = `${v.make} ${v.model} (${v.licensePlate})`
+        })
+        
+        const driversMap = {}
+        driversRes.data?.forEach(d => {
+          driversMap[d.id] = `${d.firstName} ${d.lastName}`
+        })
+        
+        setVehicles(vehiclesMap)
+        setDrivers(driversMap)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
   if (assignments.length === 0) {
     return (
       <div className="empty-state">
@@ -7,6 +44,10 @@ function VehicleAssignmentList({ assignments, onEdit, onDelete }) {
         <p>Add your first assignment to get started</p>
       </div>
     )
+  }
+
+  if (loading) {
+    return <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
   }
 
   return (
@@ -25,16 +66,16 @@ function VehicleAssignmentList({ assignments, onEdit, onDelete }) {
         <tbody>
           {assignments.map((assignment) => (
             <tr key={assignment.id}>
-              <td>{assignment.vehicleId}</td>
-              <td>{assignment.driverId}</td>
-              <td>{new Date(assignment.assignedDate).toLocaleDateString()}</td>
-              <td>{assignment.unassignedDate ? new Date(assignment.unassignedDate).toLocaleDateString() : '-'}</td>
-              <td>{assignment.status}</td>
-              <td>
+              <td data-label="Vehicle">{vehicles[assignment.vehicleId] || `ID: ${assignment.vehicleId}`}</td>
+              <td data-label="Driver">{drivers[assignment.driverId] || `ID: ${assignment.driverId}`}</td>
+              <td data-label="Assigned Date">{formatDate(assignment.assignedDate || assignment.startDate)}</td>
+              <td data-label="Unassigned Date">{formatDate(assignment.unassignedDate || assignment.endDate)}</td>
+              <td data-label="Status">{assignment.status}</td>
+              <td data-label="Actions">
                 <button
                   className="btn btn-secondary"
                   onClick={() => onEdit(assignment)}
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
                 >
                   Edit
                 </button>

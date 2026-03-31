@@ -25,16 +25,16 @@ function DriverList({ drivers, onEdit, onDelete }) {
         <tbody>
           {drivers.map((driver) => (
             <tr key={driver.id}>
-              <td>{driver.firstName} {driver.lastName}</td>
-              <td>{driver.licenseNumber}</td>
-              <td>{driver.phone}</td>
-              <td>{driver.email}</td>
-              <td>{driver.status}</td>
-              <td>
+              <td data-label="Name">{driver.firstName} {driver.lastName}</td>
+              <td data-label="License Number">{driver.licenseNumber}</td>
+              <td data-label="Phone">{driver.phone}</td>
+              <td data-label="Email">{driver.email}</td>
+              <td data-label="Status">{driver.status}</td>
+              <td data-label="Actions">
                 <button
                   className="btn btn-secondary"
                   onClick={() => onEdit(driver)}
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
                 >
                   Edit
                 </button>

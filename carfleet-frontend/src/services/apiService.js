@@ -78,6 +78,7 @@ export const documentService = {
 export const vehicleAssignmentService = {
   getAll: () => apiClient.get('/vehicle-assignments'),
   getById: (id) => apiClient.get(`/vehicle-assignments/${id}`),
+  getActiveForVehicle: (vehicleId) => apiClient.get(`/vehicle-assignments/vehicle/${vehicleId}/active`),
   create: (data) => apiClient.post('/vehicle-assignments', data),
   update: (id, data) => apiClient.put(`/vehicle-assignments/${id}`, data),
   delete: (id) => apiClient.delete(`/vehicle-assignments/${id}`),

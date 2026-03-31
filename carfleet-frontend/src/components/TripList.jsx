@@ -1,4 +1,41 @@
+import { useState, useEffect } from 'react'
+import { vehicleService, driverService } from '../services/apiService'
+import { formatDate } from '../utils/dateUtils'
+
 function TripList({ trips, onEdit, onDelete }) {
+  const [vehicles, setVehicles] = useState({})
+  const [drivers, setDrivers] = useState({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [vehiclesRes, driversRes] = await Promise.all([
+          vehicleService.getAll(),
+          driverService.getAll()
+        ])
+        
+        const vehiclesMap = {}
+        vehiclesRes.data?.forEach(v => {
+          vehiclesMap[v.id] = `${v.make} ${v.model} (${v.licensePlate})`
+        })
+        
+        const driversMap = {}
+        driversRes.data?.forEach(d => {
+          driversMap[d.id] = `${d.firstName} ${d.lastName}`
+        })
+        
+        setVehicles(vehiclesMap)
+        setDrivers(driversMap)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
   if (trips.length === 0) {
     return (
       <div className="empty-state">
@@ -7,6 +44,10 @@ function TripList({ trips, onEdit, onDelete }) {
         <p>Add your first trip to get started</p>
       </div>
     )
+  }
+
+  if (loading) {
+    return <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
   }
 
   return (
@@ -26,17 +67,17 @@ function TripList({ trips, onEdit, onDelete }) {
         <tbody>
           {trips.map((trip) => (
             <tr key={trip.id}>
-              <td>{trip.vehicleId}</td>
-              <td>{trip.driverId}</td>
-              <td>{trip.origin}</td>
-              <td>{trip.destination}</td>
-              <td>{new Date(trip.startDate).toLocaleDateString()}</td>
-              <td>{trip.status}</td>
-              <td>
+              <td data-label="Vehicle">{vehicles[trip.vehicleId] || `ID: ${trip.vehicleId}`}</td>
+              <td data-label="Driver">{trip.driverId ? (drivers[trip.driverId] || `ID: ${trip.driverId}`) : '-'}</td>
+              <td data-label="Origin">{trip.origin || trip.startLocation}</td>
+              <td data-label="Destination">{trip.destination || trip.endLocation}</td>
+              <td data-label="Start Date">{formatDate(trip.startDate || trip.startTime)}</td>
+              <td data-label="Status">{trip.status}</td>
+              <td data-label="Actions">
                 <button
                   className="btn btn-secondary"
                   onClick={() => onEdit(trip)}
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
                 >
                   Edit
                 </button>

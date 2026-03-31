@@ -1,18 +1,24 @@
 import { useState, useEffect } from 'react'
+import { getTodayDateString } from '../utils/dateUtils'
 
 function VehicleForm({ vehicle, onSave, onCancel }) {
   const [formData, setFormData] = useState({
     make: '',
     model: '',
-    licensePlate: '',
+    vin: '',
     year: new Date().getFullYear(),
-    mileage: 0,
-    status: 'Active',
+    licensePlate: '',
+    color: '',
+    fuelType: 0,
+    purchaseDate: getTodayDateString(),
   })
 
   useEffect(() => {
     if (vehicle) {
-      setFormData(vehicle)
+      setFormData({
+        ...vehicle,
+        purchaseDate: vehicle.purchaseDate?.split('T')[0] || '',
+      })
     }
   }, [vehicle])
 
@@ -20,20 +26,41 @@ function VehicleForm({ vehicle, onSave, onCancel }) {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'year' || name === 'mileage' ? parseInt(value) : value
+      [name]: name === 'year' || name === 'fuelType'
+        ? parseInt(value) || 0
+        : value
     }))
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSave(formData)
+    
+    // Convert date to ISO 8601 datetime format
+    const purchaseDateTime = formData.purchaseDate ? `${formData.purchaseDate}T00:00:00Z` : new Date().toISOString()
+    
+    const submitData = {
+      make: formData.make,
+      model: formData.model,
+      vin: formData.vin,
+      year: parseInt(formData.year),
+      licensePlate: formData.licensePlate,
+      color: formData.color || '',
+      fuelType: parseInt(formData.fuelType),
+      purchaseDate: purchaseDateTime,
+    }
+    
+    console.log('Submitting vehicle data:', submitData)
+    onSave(submitData)
+    
     setFormData({
       make: '',
       model: '',
-      licensePlate: '',
+      vin: '',
       year: new Date().getFullYear(),
-      mileage: 0,
-      status: 'Active',
+      licensePlate: '',
+      color: '',
+      fuelType: 0,
+      purchaseDate: '',
     })
   }
 
@@ -63,6 +90,29 @@ function VehicleForm({ vehicle, onSave, onCancel }) {
             />
           </div>
           <div className="form-group">
+            <label>VIN *</label>
+            <input
+              type="text"
+              name="vin"
+              value={formData.vin}
+              onChange={handleChange}
+              required
+              placeholder="Vehicle Identification Number"
+            />
+          </div>
+          <div className="form-group">
+            <label>Year *</label>
+            <input
+              type="number"
+              name="year"
+              value={formData.year}
+              onChange={handleChange}
+              required
+              min="1900"
+              max={new Date().getFullYear() + 1}
+            />
+          </div>
+          <div className="form-group">
             <label>License Plate *</label>
             <input
               type="text"
@@ -73,33 +123,32 @@ function VehicleForm({ vehicle, onSave, onCancel }) {
             />
           </div>
           <div className="form-group">
-            <label>Year</label>
+            <label>Color</label>
             <input
-              type="number"
-              name="year"
-              value={formData.year}
+              type="text"
+              name="color"
+              value={formData.color}
               onChange={handleChange}
-              min="1900"
-              max={new Date().getFullYear() + 1}
+              placeholder="e.g., Silver, Black"
             />
           </div>
           <div className="form-group">
-            <label>Mileage (km)</label>
-            <input
-              type="number"
-              name="mileage"
-              value={formData.mileage}
-              onChange={handleChange}
-              min="0"
-            />
-          </div>
-          <div className="form-group">
-            <label>Status</label>
-            <select name="status" value={formData.status} onChange={handleChange}>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-              <option value="Maintenance">Maintenance</option>
+            <label>Fuel Type *</label>
+            <select name="fuelType" value={formData.fuelType} onChange={handleChange} required>
+              <option value="0">Diesel</option>
+              <option value="1">Petrol</option>
+              <option value="2">Electric</option>
             </select>
+          </div>
+          <div className="form-group">
+            <label>Purchase Date *</label>
+            <input
+              type="date"
+              name="purchaseDate"
+              value={formData.purchaseDate}
+              onChange={handleChange}
+              required
+            />
           </div>
         </div>
         <div style={{ marginTop: '20px' }}>

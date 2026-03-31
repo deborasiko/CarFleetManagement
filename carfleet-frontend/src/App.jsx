@@ -16,17 +16,46 @@ import FleetLocationsPage from './pages/FleetLocationsPage'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+  }
 
   return (
     <Router>
       <div className="app">
-        <div className="sidebar">
+        {/* Mobile Menu Toggle Button */}
+        <button 
+          className="mobile-menu-toggle" 
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          <span className="hamburger-icon">
+            {isMobileMenuOpen ? '✕' : '☰'}
+          </span>
+        </button>
+
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div 
+            className="mobile-menu-overlay" 
+            onClick={closeMobileMenu}
+          ></div>
+        )}
+
+        <div className={`sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           <h1>🚗 Fleet Manager</h1>
           <ul className="nav-menu">
             <li className="nav-item">
               <NavLink 
                 to="/" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeMobileMenu}
               >
                 📊 Dashboard
               </NavLink>
@@ -35,6 +64,7 @@ function App() {
               <NavLink 
                 to="/vehicles" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeMobileMenu}
               >
                 🚙 Vehicles
               </NavLink>
@@ -43,6 +73,7 @@ function App() {
               <NavLink 
                 to="/drivers" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeMobileMenu}
               >
                 👤 Drivers
               </NavLink>
@@ -51,6 +82,7 @@ function App() {
               <NavLink 
                 to="/trips" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeMobileMenu}
               >
                 🛣️ Trips
               </NavLink>
@@ -59,6 +91,7 @@ function App() {
               <NavLink 
                 to="/expenses" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeMobileMenu}
               >
                 💰 Expenses
               </NavLink>
@@ -67,6 +100,7 @@ function App() {
               <NavLink 
                 to="/fuel-logs" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeMobileMenu}
               >
                 ⛽ Fuel Logs
               </NavLink>
@@ -75,6 +109,7 @@ function App() {
               <NavLink 
                 to="/service-records" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeMobileMenu}
               >
                 🔧 Service Records
               </NavLink>
@@ -83,6 +118,7 @@ function App() {
               <NavLink 
                 to="/documents" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeMobileMenu}
               >
                 📄 Documents
               </NavLink>
@@ -91,6 +127,7 @@ function App() {
               <NavLink 
                 to="/assignments" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeMobileMenu}
               >
                 📋 Assignments
               </NavLink>
@@ -99,6 +136,7 @@ function App() {
               <NavLink 
                 to="/fleet-locations" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeMobileMenu}
               >
                 📍 Fleet Locations
               </NavLink>

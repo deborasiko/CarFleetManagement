@@ -1,18 +1,24 @@
 import { useState, useEffect } from 'react'
+import { getTodayDateString } from '../utils/dateUtils'
 
 function DriverForm({ driver, onSave, onCancel }) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     licenseNumber: '',
+    licenseExpiryDate: '',
     phone: '',
     email: '',
-    status: 'Active',
+    hireDate: getTodayDateString(),
   })
 
   useEffect(() => {
     if (driver) {
-      setFormData(driver)
+      setFormData({
+        ...driver,
+        licenseExpiryDate: driver.licenseExpiryDate?.split('T')[0] || '',
+        hireDate: driver.hireDate?.split('T')[0] || '',
+      })
     }
   }, [driver])
 
@@ -26,14 +32,32 @@ function DriverForm({ driver, onSave, onCancel }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSave(formData)
+    
+    // Convert dates to ISO 8601 datetime format
+    const licenseExpiryDateTime = formData.licenseExpiryDate ? `${formData.licenseExpiryDate}T00:00:00Z` : new Date().toISOString()
+    const hireDateDateTime = formData.hireDate ? `${formData.hireDate}T00:00:00Z` : new Date().toISOString()
+    
+    const submitData = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      licenseNumber: formData.licenseNumber,
+      licenseExpiryDate: licenseExpiryDateTime,
+      phone: formData.phone || '',
+      email: formData.email || '',
+      hireDate: hireDateDateTime,
+    }
+    
+    console.log('Submitting driver data:', submitData)
+    onSave(submitData)
+    
     setFormData({
       firstName: '',
       lastName: '',
       licenseNumber: '',
+      licenseExpiryDate: '',
       phone: '',
       email: '',
-      status: 'Active',
+      hireDate: '',
     })
   }
 
@@ -73,30 +97,44 @@ function DriverForm({ driver, onSave, onCancel }) {
             />
           </div>
           <div className="form-group">
-            <label>Phone</label>
+            <label>License Expiry Date *</label>
+            <input
+              type="date"
+              name="licenseExpiryDate"
+              value={formData.licenseExpiryDate}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Phone *</label>
             <input
               type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
+              required
             />
           </div>
           <div className="form-group">
-            <label>Email</label>
+            <label>Email *</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
+              required
             />
           </div>
           <div className="form-group">
-            <label>Status</label>
-            <select name="status" value={formData.status} onChange={handleChange}>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-              <option value="On Leave">On Leave</option>
-            </select>
+            <label>Hire Date *</label>
+            <input
+              type="date"
+              name="hireDate"
+              value={formData.hireDate}
+              onChange={handleChange}
+              required
+            />
           </div>
         </div>
         <div style={{ marginTop: '20px' }}>

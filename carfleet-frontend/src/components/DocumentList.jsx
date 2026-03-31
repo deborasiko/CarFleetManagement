@@ -1,3 +1,5 @@
+import { formatDate } from '../utils/dateUtils'
+
 function DocumentList({ documents, onEdit, onDelete }) {
   if (documents.length === 0) {
     return (
@@ -25,16 +27,16 @@ function DocumentList({ documents, onEdit, onDelete }) {
         <tbody>
           {documents.map((doc) => (
             <tr key={doc.id}>
-              <td>{doc.title}</td>
-              <td>{doc.documentType}</td>
-              <td>{doc.associatedWith || '-'}</td>
-              <td>{new Date(doc.uploadDate).toLocaleDateString()}</td>
-              <td>{doc.expiryDate ? new Date(doc.expiryDate).toLocaleDateString() : '-'}</td>
-              <td>
+              <td data-label="Title">{doc.title}</td>
+              <td data-label="Type">{doc.documentType}</td>
+              <td data-label="Associated With">{doc.associatedWith || doc.vehicleId || '-'}</td>
+              <td data-label="Upload Date">{formatDate(doc.uploadDate || doc.uploadedAt || doc.issueDate)}</td>
+              <td data-label="Expiry Date">{formatDate(doc.expiryDate)}</td>
+              <td data-label="Actions">
                 <button
                   className="btn btn-secondary"
                   onClick={() => onEdit(doc)}
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
                 >
                   Edit
                 </button>

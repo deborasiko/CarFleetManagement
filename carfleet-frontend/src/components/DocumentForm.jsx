@@ -1,20 +1,23 @@
 import { useState, useEffect } from 'react'
+import VehicleSelector from './VehicleSelector'
+import { getTodayDateString } from '../utils/dateUtils'
 
 function DocumentForm({ document, onSave, onCancel }) {
   const [formData, setFormData] = useState({
-    title: '',
-    documentType: '',
-    associatedWith: '',
-    uploadDate: '',
-    expiryDate: '',
+    vehicleId: 0,
+    documentType: 0,
     filePath: '',
+    issueDate: getTodayDateString(),
+    expiryDate: '',
   })
 
   useEffect(() => {
     if (document) {
       setFormData({
-        ...document,
-        uploadDate: document.uploadDate?.split('T')[0] || '',
+        vehicleId: document.vehicleId || 0,
+        documentType: document.documentType || 0,
+        filePath: document.filePath || '',
+        issueDate: document.issueDate?.split('T')[0] || document.uploadDate?.split('T')[0] || '',
         expiryDate: document.expiryDate?.split('T')[0] || '',
       })
     }
@@ -24,13 +27,33 @@ function DocumentForm({ document, onSave, onCancel }) {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'vehicleId' || name === 'documentType'
+        ? parseInt(value) || 0
+        : value
     }))
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSave(formData)
+    
+    // Convert dates to ISO 8601 datetime format
+    const issueDateTime = formData.issueDate ? `${formData.issueDate}T00:00:00Z` : new Date().toISOString()
+    
+    // Prepare data for submission - match DocumentCreateDto
+    const submitData = {
+      vehicleId: parseInt(formData.vehicleId),
+      documentType: parseInt(formData.documentType),
+      filePath: formData.filePath || '',
+      issueDate: issueDateTime, // ISO 8601 format with time
+    }
+    
+    // Add optional expiryDate if provided
+    if (formData.expiryDate && formData.expiryDate !== '') {
+      submitData.expiryDate = `${formData.expiryDate}T00:00:00Z`
+    }
+    
+    console.log('Submitting document data:', submitData)
+    onSave(submitData)
   }
 
   return (
@@ -39,12 +62,10 @@ function DocumentForm({ document, onSave, onCancel }) {
       <form onSubmit={handleSubmit}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
           <div className="form-group">
-            <label>Title *</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
+            <label>Vehicle *</label>
+            <VehicleSelector
+              value={formData.vehicleId}
+              onChange={(vehicleId) => setFormData(prev => ({ ...prev, vehicleId }))}
               required
             />
           </div>
@@ -57,30 +78,34 @@ function DocumentForm({ document, onSave, onCancel }) {
               required
             >
               <option value="">Select Type</option>
-              <option value="License">License</option>
-              <option value="Insurance">Insurance</option>
-              <option value="Registration">Registration</option>
-              <option value="Service Manual">Service Manual</option>
-              <option value="Other">Other</option>
+              <option value="0">Insurance</option>
+              <option value="1">Registration</option>
+              <option value="2">Inspection</option>
+              <option value="3">Emission Test</option>
+              <option value="4">Vehicle Title</option>
+              <option value="5">Maintenance Record</option>
+              <option value="6">Other</option>
             </select>
           </div>
           <div className="form-group">
-            <label>Associated With</label>
+            <label>File Path *</label>
             <input
               type="text"
-              name="associatedWith"
-              value={formData.associatedWith}
+              name="filePath"
+              value={formData.filePath}
               onChange={handleChange}
-              placeholder="Vehicle ID or Driver ID"
+              required
+              placeholder="/documents/insurance_2026.pdf"
             />
           </div>
           <div className="form-group">
-            <label>Upload Date</label>
+            <label>Issue Date *</label>
             <input
               type="date"
-              name="uploadDate"
-              value={formData.uploadDate}
+              name="issueDate"
+              value={formData.issueDate}
               onChange={handleChange}
+              required
             />
           </div>
           <div className="form-group">
@@ -90,16 +115,7 @@ function DocumentForm({ document, onSave, onCancel }) {
               name="expiryDate"
               value={formData.expiryDate}
               onChange={handleChange}
-            />
-          </div>
-          <div className="form-group">
-            <label>File Path</label>
-            <input
-              type="text"
-              name="filePath"
-              value={formData.filePath}
-              onChange={handleChange}
-              placeholder="/path/to/file"
+              placeholder="Optional"
             />
           </div>
         </div>

@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react'
+import VehicleSelector from './VehicleSelector'
+import DriverSelector from './DriverSelector'
+import { getTodayDateString } from '../utils/dateUtils'
 
 function VehicleAssignmentForm({ assignment, onSave, onCancel }) {
   const [formData, setFormData] = useState({
     vehicleId: 0,
     driverId: 0,
-    assignedDate: '',
-    unassignedDate: '',
-    status: 'Active',
+    startDate: getTodayDateString(),
+    assignedBy: '',
+    notes: '',
   })
 
   useEffect(() => {
     if (assignment) {
       setFormData({
-        ...assignment,
-        assignedDate: assignment.assignedDate?.split('T')[0] || '',
-        unassignedDate: assignment.unassignedDate?.split('T')[0] || '',
+        vehicleId: assignment.vehicleId || 0,
+        driverId: assignment.driverId || 0,
+        startDate: assignment.startDate?.split('T')[0] || assignment.assignedDate?.split('T')[0] || '',
+        assignedBy: assignment.assignedBy || '',
+        notes: assignment.notes || '',
       })
     }
   }, [assignment])
@@ -23,15 +28,27 @@ function VehicleAssignmentForm({ assignment, onSave, onCancel }) {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'vehicleId' || name === 'driverId'
-        ? parseInt(value) || 0
-        : value
+      [name]: value
     }))
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSave(formData)
+    
+    // Convert date to ISO 8601 datetime format
+    const startDateTime = formData.startDate ? `${formData.startDate}T00:00:00Z` : new Date().toISOString()
+    
+    // Prepare data for submission - match VehicleAssignmentCreateDto
+    const submitData = {
+      vehicleId: parseInt(formData.vehicleId),
+      driverId: parseInt(formData.driverId),
+      startDate: startDateTime, // ISO 8601 format with time
+      assignedBy: formData.assignedBy || '',
+      notes: formData.notes || '',
+    }
+    
+    console.log('Submitting vehicle assignment data:', submitData)
+    onSave(submitData)
   }
 
   return (
@@ -40,50 +57,49 @@ function VehicleAssignmentForm({ assignment, onSave, onCancel }) {
       <form onSubmit={handleSubmit}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
           <div className="form-group">
-            <label>Vehicle ID *</label>
-            <input
-              type="number"
-              name="vehicleId"
+            <label>Vehicle *</label>
+            <VehicleSelector
               value={formData.vehicleId}
-              onChange={handleChange}
+              onChange={(vehicleId) => setFormData(prev => ({ ...prev, vehicleId }))}
               required
             />
           </div>
           <div className="form-group">
-            <label>Driver ID *</label>
-            <input
-              type="number"
-              name="driverId"
+            <label>Driver *</label>
+            <DriverSelector
               value={formData.driverId}
+              onChange={(driverId) => setFormData(prev => ({ ...prev, driverId }))}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Start Date *</label>
+            <input
+              type="date"
+              name="startDate"
+              value={formData.startDate}
               onChange={handleChange}
               required
             />
           </div>
           <div className="form-group">
-            <label>Assigned Date *</label>
+            <label>Assigned By</label>
             <input
-              type="date"
-              name="assignedDate"
-              value={formData.assignedDate}
+              type="text"
+              name="assignedBy"
+              value={formData.assignedBy}
               onChange={handleChange}
-              required
+              placeholder="e.g., admin, manager name"
             />
           </div>
-          <div className="form-group">
-            <label>Unassigned Date</label>
-            <input
-              type="date"
-              name="unassignedDate"
-              value={formData.unassignedDate}
+          <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+            <label>Notes</label>
+            <textarea
+              name="notes"
+              value={formData.notes}
               onChange={handleChange}
+              placeholder="Additional notes about this assignment"
             />
-          </div>
-          <div className="form-group">
-            <label>Status</label>
-            <select name="status" value={formData.status} onChange={handleChange}>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
           </div>
         </div>
         <div style={{ marginTop: '20px' }}>

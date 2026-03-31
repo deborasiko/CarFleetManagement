@@ -1,3 +1,5 @@
+import { formatDate } from '../utils/dateUtils'
+
 function ExpenseList({ expenses, onEdit, onDelete }) {
   if (expenses.length === 0) {
     return (
@@ -25,16 +27,16 @@ function ExpenseList({ expenses, onEdit, onDelete }) {
         <tbody>
           {expenses.map((expense) => (
             <tr key={expense.id}>
-              <td>{expense.vehicleId}</td>
-              <td>{expense.category}</td>
-              <td>${expense.amount.toFixed(2)}</td>
-              <td>{new Date(expense.date).toLocaleDateString()}</td>
-              <td>{expense.description}</td>
-              <td>
+              <td data-label="Vehicle">{expense.vehicleId}</td>
+              <td data-label="Category">{expense.category || expense.expenseType}</td>
+              <td data-label="Amount">${expense.amount?.toFixed(2) || '0.00'}</td>
+              <td data-label="Date">{formatDate(expense.date || expense.expenseDate)}</td>
+              <td data-label="Description">{expense.description}</td>
+              <td data-label="Actions">
                 <button
                   className="btn btn-secondary"
                   onClick={() => onEdit(expense)}
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
                 >
                   Edit
                 </button>
