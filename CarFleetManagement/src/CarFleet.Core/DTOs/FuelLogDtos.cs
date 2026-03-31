@@ -11,6 +11,7 @@ public class FuelLogCreateDto
     public decimal PricePerLiter { get; set; }
     public int? Odometer { get; set; }
     public string FuelStation { get; set; } = string.Empty;
+    public string Currency { get; set; } = "USD";
 }
 
 public class FuelLogUpdateDto
@@ -20,6 +21,7 @@ public class FuelLogUpdateDto
     public decimal? PricePerLiter { get; set; }
     public int? Odometer { get; set; }
     public string? FuelStation { get; set; }
+    public string? Currency { get; set; }
 }
 
 public class FuelLogResponseDto
@@ -33,4 +35,5 @@ public class FuelLogResponseDto
     public decimal TotalCost { get; set; }
     public int? Odometer { get; set; }
     public string FuelStation { get; set; } = string.Empty;
+    public string Currency { get; set; } = "USD";
 }

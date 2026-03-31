@@ -11,6 +11,7 @@ public class FuelLog
     public decimal TotalCost { get; set; }
     public int? Odometer { get; set; }
     public string FuelStation { get; set; } = string.Empty;
+    public string Currency { get; set; } = "USD";
 
     // Navigation properties
     public virtual Vehicle Vehicle { get; set; } = null!;

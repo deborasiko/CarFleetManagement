@@ -8,11 +8,13 @@ namespace CarFleet.Core.Services;
 public class FuelLogService : IFuelLogService
 {
     private readonly IFuelLogRepository _fuelLogRepository;
+    private readonly IVehicleAssignmentRepository _vehicleAssignmentRepository;
     private readonly IMapper _mapper;
 
-    public FuelLogService(IFuelLogRepository fuelLogRepository, IMapper mapper)
+    public FuelLogService(IFuelLogRepository fuelLogRepository, IVehicleAssignmentRepository vehicleAssignmentRepository, IMapper mapper)
     {
         _fuelLogRepository = fuelLogRepository;
+        _vehicleAssignmentRepository = vehicleAssignmentRepository;
         _mapper = mapper;
     }
 
@@ -47,6 +49,17 @@ public class FuelLogService : IFuelLogService
     public async Task<FuelLogResponseDto> CreateFuelLogAsync(FuelLogCreateDto fuelLogDto)
     {
         var fuelLog = _mapper.Map<FuelLog>(fuelLogDto);
+        
+        // Auto-assign driver if not provided and vehicle has active assignment
+        if (!fuelLog.DriverId.HasValue)
+        {
+            var activeAssignment = await _vehicleAssignmentRepository.GetActiveAssignmentForVehicleAsync(fuelLog.VehicleId);
+            if (activeAssignment != null)
+            {
+                fuelLog.DriverId = activeAssignment.DriverId;
+            }
+        }
+        
         fuelLog.TotalCost = fuelLog.Liters * fuelLog.PricePerLiter;
         await _fuelLogRepository.AddAsync(fuelLog);
         await _fuelLogRepository.SaveChangesAsync();

@@ -288,12 +288,14 @@ public class DriverServiceTests
 public class FuelLogServiceTests
 {
     private readonly Mock<IFuelLogRepository> _mockRepository;
+    private readonly Mock<IVehicleAssignmentRepository> _mockAssignmentRepository;
     private readonly IMapper _mapper;
     private readonly FuelLogService _service;
 
     public FuelLogServiceTests()
     {
         _mockRepository = new Mock<IFuelLogRepository>();
+        _mockAssignmentRepository = new Mock<IVehicleAssignmentRepository>();
         
         var mapperConfig = new MapperConfiguration(cfg =>
         {
@@ -304,7 +306,7 @@ public class FuelLogServiceTests
         });
         _mapper = mapperConfig.CreateMapper();
         
-        _service = new FuelLogService(_mockRepository.Object, _mapper);
+        _service = new FuelLogService(_mockRepository.Object, _mockAssignmentRepository.Object, _mapper);
     }
 
     [Fact]

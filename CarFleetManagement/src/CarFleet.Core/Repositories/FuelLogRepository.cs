@@ -26,24 +26,23 @@ public class FuelLogRepository : Repository<FuelLog>, IFuelLogRepository
     public async Task<decimal> GetAverageFuelConsumptionAsync(int vehicleId)
     {
         var logs = await DbSet
-            .Where(fl => fl.VehicleId == vehicleId)
-            .OrderBy(fl => fl.FuelDate)
+            .Where(fl => fl.VehicleId == vehicleId && fl.Odometer.HasValue && fl.Odometer > 0)
             .ToListAsync();
 
-        if (logs.Count < 2) return 0;
+        if (logs.Count == 0) return 0;
 
-        decimal totalDistance = 0;
-        decimal totalLiters = 0;
+        // Calculate individual consumption for each log and return average (L/100km)
+        decimal totalConsumption = 0;
+        int validLogs = 0;
 
-        for (int i = 1; i < logs.Count; i++)
+        foreach (var log in logs)
         {
-            if (logs[i].Odometer.HasValue && logs[i - 1].Odometer.HasValue)
-            {
-                totalDistance += logs[i].Odometer!.Value - logs[i - 1].Odometer!.Value;
-                totalLiters += logs[i].Liters;
-            }
+            // Consumption = (Liters * 100) / Odometer
+            var consumption = (log.Liters * 100) / log.Odometer!.Value;
+            totalConsumption += consumption;
+            validLogs++;
         }
 
-        return totalLiters > 0 ? totalDistance / totalLiters : 0;
+        return validLogs > 0 ? totalConsumption / validLogs : 0;
     }
 }
