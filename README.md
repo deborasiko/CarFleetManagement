@@ -26,7 +26,7 @@ A comprehensive full-stack application for managing vehicle fleet operations, in
 ## 🏗️ Project Structure
 
 ```
-elastoffice/
+carfleetmanagementproject/
 ├── carfleet-frontend/          # React frontend (Vite)
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
@@ -91,7 +91,7 @@ elastoffice/
 
 ### Step 1: Clone & Navigate to Project
 ```bash
-cd elastoffice
+cd carfleetmanagementproject
 ```
 
 ### Step 2: Start All Services
